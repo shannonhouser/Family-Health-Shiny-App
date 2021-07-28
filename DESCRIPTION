@@ -1,12 +1,42 @@
 Package: YoloHealthApp
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com")
+Authors@R: c(
+  person(given = "Shannon",
+           family = "Houser",
+           role = "aut",
+           email = "shannon.houser@duke.edu"),
+  person(given = "Gaurav",
+           family = "Sirdeshmukh",
+           role = "aut",
+           email = "gaurav.sirdeshmukh@duke.edu"),
+  person(given = "Junbo",
+           family = "Guan",
+           role = "aut",
+           email = "junbo.guan@duke.edu"),
+  person(given = "Olivier",
+           family = "Binette",
+           role = c("ctb", "cre"),
+           email = "olivier.binette@gmail.com"))
 Description: What the package does (one paragraph).
+Imports: shiny,
+  shinydashboard,
+  shinybusy,
+  tidyverse, 
+  tigris, 
+  leaflet, 
+  ggplot2, 
+  ggmap, 
+  maps, 
+  mapdata, 
+  zipcodeR, 
+  sf, 
+  USAboundaries, 
+  XML, 
+  acs, 
+  stringr, 
+  htmltools, 
+  janitor
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
