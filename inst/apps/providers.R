@@ -18,9 +18,6 @@ library(janitor)
 
 ## Providers
 
-print(getwd())
-print(list.files("../Data"))
-
 #providers <- read.csv("../Data/State_of_California_Geocoded_Providers__2019_California_Clinics_Geocoded.csv")
 providers <- read.csv("../Data/care-provider-network-apr-2021.csv", stringsAsFactors = FALSE) %>% 
   mutate(
