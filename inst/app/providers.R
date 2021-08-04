@@ -19,8 +19,8 @@ library(tidygeocoder)
 
 ## Providers
 
-#providers <- read.csv("../Data/State_of_California_Geocoded_Providers__2019_California_Clinics_Geocoded.csv")
-providers <- read.csv("../Data/care-provider-network-apr-2021.csv", stringsAsFactors = FALSE) %>% 
+#providers <- read.csv("../appData/State_of_California_Geocoded_Providers__2019_California_Clinics_Geocoded.csv")
+providers <- read.csv("../appData/care-provider-network-apr-2021.csv", stringsAsFactors = FALSE) %>%
   mutate(
     Site_Name = str_to_title(Site_Name),
     Managed_Care_Classification = case_when(
@@ -30,10 +30,10 @@ providers <- read.csv("../Data/care-provider-network-apr-2021.csv", stringsAsFac
     )
   )
 
-providers_free <- providers %>% 
-  filter(is.na(Latitude)) %>% 
-  mutate(state = "CA") %>% 
-  geocode(method = 'census', 
+providers_free <- providers %>%
+  filter(is.na(Latitude)) %>%
+  mutate(state = "CA") %>%
+  geocode(method = 'census',
           street = Street_Address,
           city = City,
           state = state,
@@ -43,63 +43,60 @@ providers <- left_join(
   providers,
   providers_free,
   by = c("SITE_TELEPHONE_NUMBER", "Site_Name", "Street_Address")
-) %>% 
+) %>%
   mutate(Latitude.x = ifelse(is.na(Latitude.x),lat, Latitude.x),
-         Longitude.x = ifelse(is.na(Longitude.x),long, Longitude.x)) %>% 
-  select(-contains(".y")) %>% 
+         Longitude.x = ifelse(is.na(Longitude.x),long, Longitude.x)) %>%
+  select(-contains(".y")) %>%
   rename_with(., str_remove, pattern = ".x")
 
 
 ## Day Care Centers
-day_cares <- read.csv("../Data/community-care-licensing-child-care-center-locations-.csv") %>% 
+day_cares <- read.csv("../appData/community-care-licensing-child-care-center-locations-.csv") %>%
   clean_names()
 
-yolo_day_cares <- day_cares %>% 
+yolo_day_cares <- day_cares %>%
   filter(county_name == "YOLO",
-         facility_status != "CLOSED") %>% 
-  mutate(facility_city = str_remove_all(facility_city, ",")) %>% 
+         facility_status != "CLOSED") %>%
+  mutate(facility_city = str_remove_all(facility_city, ",")) %>%
   mutate(across(.cols = c(facility_type, facility_name, facility_administrator, facility_address, facility_city), str_to_title))
 
 ## Food
-vendors <- read.csv("../Data/vendor.csv") %>% 
+vendors <- read.csv("../appData/vendor.csv") %>%
   filter(County == " YOLO")
 
 ## Community Organizations
 
 counties <- counties(state = "CA")
 
-yolo <- counties %>% 
+yolo <- counties %>%
   filter(NAME == "Yolo")
 
-comm_orgs <- readxl::read_xlsx("../Data/yolo_county_community_orgs.xlsx") %>% 
+comm_orgs <- readxl::read_xlsx("../appData/yolo_county_community_orgs.xlsx") %>%
   clean_names()
 
-comm_orgs <- comm_orgs %>% 
-  mutate(comm_main_url = str_extract(name_of_organization, "https.*")) %>% 
-  mutate(name_of_organization = str_remove(name_of_organization, " https.*")) %>% 
-  mutate(across(.cols = 2:ncol(.), 
-                ~str_replace(., " ", "\n"))) %>% 
+comm_orgs <- comm_orgs %>%
+  mutate(comm_main_url = str_extract(name_of_organization, "https.*")) %>%
+  mutate(name_of_organization = str_remove(name_of_organization, " https.*")) %>%
+  mutate(across(.cols = 2:ncol(.),
+                ~str_replace(., " ", "\n"))) %>%
   pivot_longer(cols = c(2:16),
                names_to = "resource",
-               values_to = 'value_url') %>% 
+               values_to = 'value_url') %>%
   mutate(resource = str_replace_all(resource, "_", " "),
          resource = str_to_title(resource))
 
 ## Maps for Home Page
 
 tracts <- tracts(state = 'CA', county = "yolo", cb=TRUE)
-api.key.install(key="9ec0e76890fc15208ffc735423da847eb242a3e1")
 geo<-geo.make(state=c("CA"),
               county= 113, tract="*")
 durham_tracts <- tracts(state = 'NC', county = "durham", cb=TRUE)
 
 # Over 200K
-income_2015_2019 <-acs.fetch(endyear = 2019, span = 5, geography = geo,
-                             table.number = "B19001", col.names = "pretty")
 
-income_2015_2019_df <- data.frame(paste0(str_pad(income_2015_2019@geography$state, 2, "left", pad="0"), 
-                                         str_pad(income_2015_2019@geography$county, 3, "left", pad="0"), 
-                                         str_pad(income_2015_2019@geography$tract, 6, "left", pad="0")), 
+income_2015_2019_df <- data.frame(paste0(str_pad(income_2015_2019@geography$state, 2, "left", pad="0"),
+                                         str_pad(income_2015_2019@geography$county, 3, "left", pad="0"),
+                                         str_pad(income_2015_2019@geography$tract, 6, "left", pad="0")),
                                   income_2015_2019@estimate,
                                   stringsAsFactors = FALSE)
 
@@ -109,11 +106,11 @@ colnames(income_2015_2019_df)[2:18] <- str_remove(colnames(income_2015_2019_df[2
 
 names(income_2015_2019_df)[2] <- "Total"
 
-income_2015_2019_df <- income_2015_2019_df %>% 
+income_2015_2019_df <- income_2015_2019_df %>%
   clean_names()
 
-income_2015_2019_df_over_200 <- income_2015_2019_df %>% 
-  select(c(1:2, 18)) 
+income_2015_2019_df_over_200 <- income_2015_2019_df %>%
+  select(c(1:2, 18))
 
 names(income_2015_2019_df_over_200)<-c("GEOID", "total", "over_200")
 income_2015_2019_df_over_200$percent <- 100*(income_2015_2019_df_over_200$over_200/income_2015_2019_df_over_200$total)
@@ -132,38 +129,35 @@ pal <- colorNumeric(
 
 map_over_200_2015_2019 <- leaflet() %>%
   addProviderTiles("CartoDB.Positron") %>%
-  addPolygons(data = income_2015_2019_df_over_200_merged, 
-              fillColor = ~pal(percent), 
+  addPolygons(data = income_2015_2019_df_over_200_merged,
+              fillColor = ~pal(percent),
               color = "#b2aeae", # you need to use hex colors
-              fillOpacity = 0.7, 
-              weight = 1, 
+              fillOpacity = 0.7,
+              weight = 1,
               smoothFactor = 0.2,
               popup = popup) %>%
-  addLegend(pal = pal, 
-            values = income_2015_2019_df_over_200_merged$percent, 
-            position = "bottomleft", 
+  addLegend(pal = pal,
+            values = income_2015_2019_df_over_200_merged$percent,
+            position = "bottomleft",
             title = "Percent of Households<br>above $200k",
-            labFormat = labelFormat(suffix = "%")) 
+            labFormat = labelFormat(suffix = "%"))
 
 # Below Poverty Line
 
-poverty_sex_age <- acs.fetch(endyear = 2019, span = 5, geography = geo,
-                             table.number = "B17001", col.names = "pretty")
-
-poverty_sex_age_df <- data.frame(paste0(str_pad(poverty_sex_age@geography$state, 2, "left", pad="0"), 
-                                        str_pad(poverty_sex_age@geography$county, 3, "left", pad="0"), 
-                                        str_pad(poverty_sex_age@geography$tract, 6, "left", pad="0")), 
+poverty_sex_age_df <- data.frame(paste0(str_pad(poverty_sex_age@geography$state, 2, "left", pad="0"),
+                                        str_pad(poverty_sex_age@geography$county, 3, "left", pad="0"),
+                                        str_pad(poverty_sex_age@geography$tract, 6, "left", pad="0")),
                                  poverty_sex_age@estimate,
-                                 stringsAsFactors = FALSE) %>% 
+                                 stringsAsFactors = FALSE) %>%
   clean_names()
 
-poverty_sex_age_df <- poverty_sex_age_df %>% 
+poverty_sex_age_df <- poverty_sex_age_df %>%
   select(c(1:3))
 
-names(poverty_sex_age_df) <- c("GEOID", "total", "poverty") 
+names(poverty_sex_age_df) <- c("GEOID", "total", "poverty")
 
-poverty_sex_age_df_merged <- poverty_sex_age_df %>% 
-  mutate(percent = round((poverty/total)*100, 2)) %>% 
+poverty_sex_age_df_merged <- poverty_sex_age_df %>%
+  mutate(percent = round((poverty/total)*100, 2)) %>%
   geo_join(tracts, ., "GEOID", "GEOID")
 
 popup_poverty_sex_age <- paste0("GEOID: ", poverty_sex_age_df_merged$GEOID, "<br>", "Percent of Households below $25k: ", round(poverty_sex_age_df_merged$percent,2))
@@ -174,34 +168,31 @@ pal_poverty_sex_age <- colorNumeric(
 
 map_poverty_sex_age <- leaflet() %>%
   addProviderTiles("CartoDB.Positron") %>%
-  addPolygons(data = poverty_sex_age_df_merged, 
-              fillColor = ~pal_poverty_sex_age(percent), 
+  addPolygons(data = poverty_sex_age_df_merged,
+              fillColor = ~pal_poverty_sex_age(percent),
               color = "#b2aeae", # you need to use hex colors
-              fillOpacity = 0.7, 
-              weight = 1, 
+              fillOpacity = 0.7,
+              weight = 1,
               smoothFactor = 0.2,
               popup = popup_poverty_sex_age) %>%
-  addLegend(pal = pal_poverty_sex_age, 
-            values = poverty_sex_age_df_merged$percent, 
-            position = "bottomleft", 
+  addLegend(pal = pal_poverty_sex_age,
+            values = poverty_sex_age_df_merged$percent,
+            position = "bottomleft",
             title = "Percent of People<br>below Poverty Line",
-            labFormat = labelFormat(suffix = "%")) 
+            labFormat = labelFormat(suffix = "%"))
 
 # Gini Index
 
-gini <- acs.fetch(endyear = 2019, span = 5, geography = geo,
-                  table.number = "B19083", col.names = "pretty")
-
-gini_df <- data.frame(paste0(str_pad(poverty_sex_age@geography$state, 2, "left", pad="0"), 
-                             str_pad(poverty_sex_age@geography$county, 3, "left", pad="0"), 
-                             str_pad(poverty_sex_age@geography$tract, 6, "left", pad="0")), 
+gini_df <- data.frame(paste0(str_pad(poverty_sex_age@geography$state, 2, "left", pad="0"),
+                             str_pad(poverty_sex_age@geography$county, 3, "left", pad="0"),
+                             str_pad(poverty_sex_age@geography$tract, 6, "left", pad="0")),
                       gini@estimate,
-                      stringsAsFactors = FALSE) %>% 
+                      stringsAsFactors = FALSE) %>%
   clean_names()
 
-names(gini_df) <- c("GEOID", "gini_index") 
+names(gini_df) <- c("GEOID", "gini_index")
 
-gini_df_merged <- gini_df %>% 
+gini_df_merged <- gini_df %>%
   geo_join(tracts, ., "GEOID", "GEOID")
 
 popup_gini <- paste0("GEOID: ", gini_df_merged$GEOID, "<br>", "Gini Index: ", round(gini_df_merged$gini_index,2))
@@ -212,21 +203,21 @@ pal_gini <- colorNumeric(
 
 map_gini <- leaflet() %>%
   addProviderTiles("CartoDB.Positron") %>%
-  addPolygons(data = gini_df_merged, 
-              fillColor = ~pal_gini(gini_index), 
+  addPolygons(data = gini_df_merged,
+              fillColor = ~pal_gini(gini_index),
               color = "#b2aeae", # you need to use hex colors
-              fillOpacity = 0.7, 
-              weight = 1, 
+              fillOpacity = 0.7,
+              weight = 1,
               smoothFactor = 0.2,
               popup = popup_gini) %>%
-  addLegend(pal = pal_gini, 
-            values = gini_df_merged$gini_index, 
-            position = "bottomleft", 
-            title = "Gini Index") 
+  addLegend(pal = pal_gini,
+            values = gini_df_merged$gini_index,
+            position = "bottomleft",
+            title = "Gini Index")
 
 # Health Insurance
 
-health_insur_age_edu <- read.csv("../Data/health_insurance_age_education.csv") %>%
+health_insur_age_edu <- read.csv("../appData/health_insurance_age_education.csv") %>%
   clean_names()
 
 health_insur_age_edu <- health_insur_age_edu %>%
@@ -267,7 +258,7 @@ map_health_insurance <- leaflet() %>%
 
 # Durham Health Insurance
 
-health_insur_age_edu_durham <- read.csv("../Data/health_insurance_age_education_durham.csv") %>%
+health_insur_age_edu_durham <- read.csv("../appData/health_insurance_age_education_durham.csv") %>%
   clean_names()
 
 health_insur_age_edu_durham <- health_insur_age_edu_durham %>%
