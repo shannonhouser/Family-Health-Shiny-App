@@ -37,7 +37,8 @@ Imports:
     acs (>= 2.1.4),
     stringr (>= 1.4.0),
     htmltools (>= 0.5.1.1),
-    janitor (>= 2.1.0)
+    janitor (>= 2.1.0),
+    tidygeocoder
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

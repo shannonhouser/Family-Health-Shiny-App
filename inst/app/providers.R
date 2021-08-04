@@ -15,6 +15,7 @@ library(acs)
 library(stringr) # to pad fips codes
 library(htmltools)
 library(janitor)
+library(tidygeocoder)
 
 ## Providers
 
@@ -28,6 +29,26 @@ providers <- read.csv("../Data/care-provider-network-apr-2021.csv", stringsAsFac
       TRUE ~ Managed_Care_Classification
     )
   )
+
+providers_free <- providers %>% 
+  filter(is.na(Latitude)) %>% 
+  mutate(state = "CA") %>% 
+  geocode(method = 'census', 
+          street = Street_Address,
+          city = City,
+          state = state,
+          postalcode = Zip_Code)
+
+providers <- left_join(
+  providers,
+  providers_free,
+  by = c("SITE_TELEPHONE_NUMBER", "Site_Name", "Street_Address")
+) %>% 
+  mutate(Latitude.x = ifelse(is.na(Latitude.x),lat, Latitude.x),
+         Longitude.x = ifelse(is.na(Longitude.x),long, Longitude.x)) %>% 
+  select(-contains(".y")) %>% 
+  rename_with(., str_remove, pattern = ".x")
+
 
 ## Day Care Centers
 day_cares <- read.csv("../Data/community-care-licensing-child-care-center-locations-.csv") %>% 
