@@ -16,7 +16,7 @@ library(shiny.i18n)
 library(leaflet)
 library(tidyverse)
 
-i18n <- Translator$new(translation_json_path=paste0(system.file("/appData/translate.js", package="YoloHealthApp")))
+i18n <- Translator$new(translation_json_path=paste0(system.file("app/data/translate.js", package="YoloHealthApp")))
 i18n$set_translation_language('English')
 
 source("providers.R")

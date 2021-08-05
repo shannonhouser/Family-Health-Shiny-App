@@ -21,8 +21,8 @@ library(YoloHealthApp)
 
 ## Providers
 
-#providers <- read.csv("../appData/State_of_California_Geocoded_Providers__2019_California_Clinics_Geocoded.csv")
-providers <- read.csv("../appData/care-provider-network-apr-2021.csv", stringsAsFactors = FALSE) %>%
+#providers <- read.csv("data/State_of_California_Geocoded_Providers__2019_California_Clinics_Geocoded.csv")
+providers <- read.csv("data/care-provider-network-apr-2021.csv", stringsAsFactors = FALSE) %>%
   mutate(
     Site_Name = str_to_title(Site_Name),
     Managed_Care_Classification = case_when(
@@ -53,7 +53,7 @@ providers <- left_join(
 
 
 ## Day Care Centers
-day_cares <- read.csv("../appData/community-care-licensing-child-care-center-locations-.csv") %>%
+day_cares <- read.csv("data/community-care-licensing-child-care-center-locations-.csv") %>%
   clean_names()
 
 yolo_day_cares <- day_cares %>%
@@ -63,12 +63,12 @@ yolo_day_cares <- day_cares %>%
   mutate(across(.cols = c(facility_type, facility_name, facility_administrator, facility_address, facility_city), str_to_title))
 
 ## Food
-vendors <- read.csv("../appData/vendor.csv") %>%
+vendors <- read.csv("data/vendor.csv") %>%
   filter(County == " YOLO")
 
 ## Community Organizations
 
-comm_orgs <- readxl::read_xlsx("../appData/yolo_county_community_orgs.xlsx") %>%
+comm_orgs <- readxl::read_xlsx("data/yolo_county_community_orgs.xlsx") %>%
   clean_names()
 
 comm_orgs <- comm_orgs %>%
@@ -211,7 +211,7 @@ map_gini <- leaflet() %>%
 
 # Health Insurance
 
-health_insur_age_edu <- read.csv("../appData/health_insurance_age_education.csv") %>%
+health_insur_age_edu <- read.csv("data/health_insurance_age_education.csv") %>%
   clean_names()
 
 health_insur_age_edu <- health_insur_age_edu %>%
@@ -252,7 +252,7 @@ map_health_insurance <- leaflet() %>%
 
 # Durham Health Insurance
 
-health_insur_age_edu_durham <- read.csv("../appData/health_insurance_age_education_durham.csv") %>%
+health_insur_age_edu_durham <- read.csv("data/health_insurance_age_education_durham.csv") %>%
   clean_names()
 
 health_insur_age_edu_durham <- health_insur_age_edu_durham %>%
