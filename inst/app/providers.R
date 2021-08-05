@@ -252,49 +252,49 @@ map_health_insurance <- leaflet() %>%
 
 # Durham Health Insurance
 
-health_insur_age_edu_durham <- read.csv("data/health_insurance_age_education_durham.csv") %>%
-  clean_names()
-
-health_insur_age_edu_durham <- health_insur_age_edu_durham %>%
-  mutate(id = str_remove(id, "\\d*\\D{2}")) %>%
-  rename("GEOID" = "id")
-
-no_insur_durham <- health_insur_age_edu_durham[c(1,3,str_which(names(health_insur_age_edu_durham), "no_health_insurance_coverage"))]
-
-no_insur_durham <- no_insur_durham[c(1,2,str_which(names(no_insur_durham), "estimate_total_"))]
-
-
-no_insur_durham <- no_insur_durham %>%
-  mutate(not_insured = rowSums(no_insur_durham[,c(3:10)]),
-         not_insured_pct = not_insured/estimate_total,
-         percent_insured = (estimate_total - not_insured)/estimate_total)
-
-no_insur_durham <- no_insur_durham %>%
-  geo_join(durham_tracts, ., "GEOID", "GEOID")
-
-no_insur_durham <- no_insur_durham %>%
-  mutate(not_insured_pct = ifelse(GEOID == "37063980100", 0, not_insured_pct))
-
-
-popup_health_insurance <- paste0("GEOID: ", no_insur_durham$GEOID, "<br>", "Percent Without Insurance: ", round(no_insur_durham$not_insured_pct*100,2), "%")
-pal_health_insurance <- colorNumeric(
-  palette = "YlGnBu",
-  domain = no_insur_durham$not_insured_pct
-)
-
-map_health_insurance_durham <- leaflet() %>%
-  addProviderTiles("CartoDB.Positron") %>%
-  addPolygons(data = no_insur_durham,
-              fillColor = ~pal_health_insurance(not_insured_pct),
-              color = "#b2aeae", # you need to use hex colors
-              fillOpacity = 0.7,
-              weight = 1,
-              smoothFactor = 0.2,
-              popup = popup_health_insurance) %>%
-  addLegend(pal = pal_health_insurance,
-            values = no_insur_durham$not_insured_pct,
-            position = "bottomleft",
-            title = "Percent of People<br> without Health Insurance",
-            labFormat = labelFormat(suffix = "%"))
+# health_insur_age_edu_durham <- read.csv("data/health_insurance_age_education_durham.csv") %>%
+#   clean_names()
+# 
+# health_insur_age_edu_durham <- health_insur_age_edu_durham %>%
+#   mutate(id = str_remove(id, "\\d*\\D{2}")) %>%
+#   rename("GEOID" = "id")
+# 
+# no_insur_durham <- health_insur_age_edu_durham[c(1,3,str_which(names(health_insur_age_edu_durham), "no_health_insurance_coverage"))]
+# 
+# no_insur_durham <- no_insur_durham[c(1,2,str_which(names(no_insur_durham), "estimate_total_"))]
+# 
+# 
+# no_insur_durham <- no_insur_durham %>%
+#   mutate(not_insured = rowSums(no_insur_durham[,c(3:10)]),
+#          not_insured_pct = not_insured/estimate_total,
+#          percent_insured = (estimate_total - not_insured)/estimate_total)
+# 
+# no_insur_durham <- no_insur_durham %>%
+#   geo_join(durham_tracts, ., "GEOID", "GEOID")
+# 
+# no_insur_durham <- no_insur_durham %>%
+#   mutate(not_insured_pct = ifelse(GEOID == "37063980100", 0, not_insured_pct))
+# 
+# 
+# popup_health_insurance <- paste0("GEOID: ", no_insur_durham$GEOID, "<br>", "Percent Without Insurance: ", round(no_insur_durham$not_insured_pct*100,2), "%")
+# pal_health_insurance <- colorNumeric(
+#   palette = "YlGnBu",
+#   domain = no_insur_durham$not_insured_pct
+# )
+# 
+# map_health_insurance_durham <- leaflet() %>%
+#   addProviderTiles("CartoDB.Positron") %>%
+#   addPolygons(data = no_insur_durham,
+#               fillColor = ~pal_health_insurance(not_insured_pct),
+#               color = "#b2aeae", # you need to use hex colors
+#               fillOpacity = 0.7,
+#               weight = 1,
+#               smoothFactor = 0.2,
+#               popup = popup_health_insurance) %>%
+#   addLegend(pal = pal_health_insurance,
+#             values = no_insur_durham$not_insured_pct,
+#             position = "bottomleft",
+#             title = "Percent of People<br> without Health Insurance",
+#             labFormat = labelFormat(suffix = "%"))
 
 
