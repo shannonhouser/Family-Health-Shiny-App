@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 ## Installation
 
-You can install the development version of YoloHealthApp from source by following the instructions below.
+You can install the development version of **YoloHealthApp** from source by following the instructions below.
 
 First, navigate to the [**releases**](https://github.com/Data-Visualization-for-Family-Health/YoloHealthApp/releases) page of this Github repository and download the latest tar.gz asset (currently [YoloHealthApp_0.0.0.9000.tar.gz](https://github.com/Data-Visualization-for-Family-Health/YoloHealthApp/releases/download/0.0.0.9000/YoloHealthApp_0.0.0.9000.tar.gz))
 
@@ -39,5 +39,11 @@ You can now launch the app as follows:
 YoloHealthApp::runApp()
 ```
 
+### Installation on a Shiny server
 
+**YoloHealthApp** first needs to be installed using the above instructions. This will install all R dependencies needed for the app as well as the necessary data.
+
+The `site_dir` variable of the Shiny server should then be set to `YoloHealthApp/app` under the system's R library folder where YoloHealthApp is located. The location of the system R library can be found using the `.libPaths()` R command.
+
+Alternatively, using the default value of `site_dir`, the `inst/app` folder of this repository can be copied to `/srv/shiny-server/`. The application at `/srv/shiny-server/app` would then be available at http://myserver.org:3838/app
 
