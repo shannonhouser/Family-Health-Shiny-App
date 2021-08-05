@@ -38,6 +38,6 @@ counties <- counties(state = "CA")
 yolo <- counties %>%
   filter(NAME == "Yolo")
 
-tracts <- tracts(state = 'CA', county = "yolo", cb=TRUE)
+tracts <- tracts(state = 'CA', county = "yolo", cb = TRUE)
 
 usethis::use_data(income_2015_2019, poverty_sex_age, gini, yolo, tracts, overwrite = FALSE)
