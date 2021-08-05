@@ -41,3 +41,29 @@ Alternatively, using the default value of `site_dir`, the `inst/app`
 folder of this repository can be copied to `/srv/shiny-server/`. The
 application at `/srv/shiny-server/app` would then be available at
 <http://myserver.org:3838/app>
+
+## Organization
+
+### R
+
+Contains the Rscript runApp.R which allows you to run the app with the simple command
+
+``` r
+YoloHealthApp::runApp()
+```
+
+### inst/app
+
+Contains app.R with the R code of the shiny app (UI and server)
+Contains providers.R as a source file that cleans the data
+Contains a data folder
+
+### data-raw
+
+Contains downloads.R which downloads data from the census API to make deployment of the app quicker
+It will need to be updated annually to ensure accuracy.
+Only needs to be run when the census data changes for updates.
+
+### data
+
+Contains the data saved after running the file downloads.R
