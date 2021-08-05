@@ -30,7 +30,7 @@ if (!require(remotes)) install.packages("remotes")
 remotes::install_github("Data-Visualization-for-Family-Health/YoloHealthApp")
 ```
 
-You can now launch the app as follows:
+You can then launch the app as follows:
 
 ``` r
 YoloHealthApp::runApp()
