@@ -17,6 +17,8 @@ library(htmltools)
 library(janitor)
 library(tidygeocoder)
 
+library(YoloHealthApp)
+
 ## Providers
 
 #providers <- read.csv("../appData/State_of_California_Geocoded_Providers__2019_California_Clinics_Geocoded.csv")
@@ -66,11 +68,6 @@ vendors <- read.csv("../appData/vendor.csv") %>%
 
 ## Community Organizations
 
-counties <- counties(state = "CA")
-
-yolo <- counties %>%
-  filter(NAME == "Yolo")
-
 comm_orgs <- readxl::read_xlsx("../appData/yolo_county_community_orgs.xlsx") %>%
   clean_names()
 
@@ -87,9 +84,6 @@ comm_orgs <- comm_orgs %>%
 
 ## Maps for Home Page
 
-tracts <- tracts(state = 'CA', county = "yolo", cb=TRUE)
-geo<-geo.make(state=c("CA"),
-              county= 113, tract="*")
 durham_tracts <- tracts(state = 'NC', county = "durham", cb=TRUE)
 
 # Over 200K

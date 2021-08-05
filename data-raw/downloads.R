@@ -17,7 +17,6 @@ library(htmltools)
 library(janitor)
 library(tidygeocoder)
 
-tracts <- tracts(state = 'CA', county = "yolo", cb=TRUE)
 api.key.install(key="9ec0e76890fc15208ffc735423da847eb242a3e1")
 geo<-geo.make(state=c("CA"),
               county= 113, tract="*")
@@ -34,5 +33,11 @@ poverty_sex_age <- acs.fetch(endyear = 2019, span = 5, geography = geo,
 gini <- acs.fetch(endyear = 2019, span = 5, geography = geo,
                   table.number = "B19083", col.names = "pretty")
 
+counties <- counties(state = "CA")
 
-usethis::use_data(income_2015_2019, poverty_sex_age, gini, overwrite = TRUE)
+yolo <- counties %>%
+  filter(NAME == "Yolo")
+
+tracts <- tracts(state = 'CA', county = "yolo", cb=TRUE)
+
+usethis::use_data(income_2015_2019, poverty_sex_age, gini, yolo, tracts, overwrite = FALSE)
