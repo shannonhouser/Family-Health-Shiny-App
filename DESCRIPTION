@@ -32,8 +32,6 @@ Imports:
     mapdata (>= 2.3.0),
     zipcodeR (>= 0.3.1),
     sf (>= 1.0.2),
-    USAboundaries (>= 0.3.1),
-    USAboundaries (<= 0.4.0),
     XML (>= 3.99.0.6),
     acs (>= 2.1.4),
     stringr (>= 1.4.0),
